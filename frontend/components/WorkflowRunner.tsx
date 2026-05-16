@@ -8,7 +8,7 @@ import TokenInspector from "./TokenInspector";
 import ScenarioSelector, { Scenario } from "./ScenarioSelector";
 import {
   Play, StopCircle, AlertTriangle, Bug, GripVertical,
-  ChevronUp, ChevronDown, X, Plus, CheckCircle,
+  ChevronUp, ChevronDown, X, Plus, CheckCircle, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,7 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
   const [activeTab, setActiveTab] = useState<Tab>("events");
   const [blocked, setBlocked] = useState(false);
   const [workflowDone, setWorkflowDone] = useState(false);
+  const [currentAgent, setCurrentAgent] = useState<string | null>(null);
   const controllerRef = useRef<AbortController | null>(null);
 
   // Drag state
@@ -127,6 +128,10 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
     const type = event.type as string;
     const data = (event.data ?? {}) as Record<string, unknown>;
 
+    if (type === "agent_start") {
+      setCurrentAgent(data.agent_name as string);
+    }
+
     if (type === "semauth_blocked") {
       const priorHops = (data.delegation_chain as DelegationHop[]) ?? [];
       setHops([...priorHops, {
@@ -154,6 +159,7 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
         },
       }]);
       setBlocked(true);
+      setCurrentAgent(null);
       setActiveTab("chain");
     }
 
@@ -161,6 +167,7 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
       const chainData = (data.delegation_chain as DelegationHop[]) ?? [];
       if (chainData.length > 0) setHops(chainData);
       setWorkflowDone(true);
+      setCurrentAgent(null);
       setActiveTab("tokens");
     }
 
@@ -175,6 +182,7 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
     if (!task.trim() || pipeline.length === 0) return;
     setEvents([]); setHops([]); setTokens([]);
     setBlocked(false); setWorkflowDone(false);
+    setCurrentAgent(null);
     setActiveTab("events");
     setRunning(true);
     const cleanInjections = Object.fromEntries(
@@ -275,9 +283,11 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
                   onDragEnd={onDragEnd}
                   className={cn(
                     "border rounded-xl transition-all duration-200",
-                    dragOverIdx === idx
-                      ? "border-zinc-900 bg-zinc-50 scale-[1.01] shadow-sm"
-                      : "border-zinc-200 bg-white hover:border-zinc-300"
+                    running && currentAgent === agent.name
+                      ? "border-zinc-900 bg-zinc-50 shadow-sm ring-2 ring-zinc-900 ring-offset-1"
+                      : dragOverIdx === idx
+                        ? "border-zinc-900 bg-zinc-50 scale-[1.01] shadow-sm"
+                        : "border-zinc-200 bg-white hover:border-zinc-300"
                   )}
                 >
                   {/* Agent row */}
@@ -394,17 +404,38 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
 
       {/* ── Results ────────────────────────────────────────────────────── */}
       <div className="bg-white border border-zinc-200 rounded-xl shadow-sm overflow-hidden">
+        {/* Running indicator */}
+        {running && (
+          <>
+            {/* Animated progress bar */}
+            <div className="h-1 w-full bg-zinc-100 overflow-hidden">
+              <div className="h-full bg-zinc-900" style={{ width: "40%", animation: "progress 1.4s ease-in-out infinite" }} />
+            </div>
+            <div className="px-5 py-4 flex items-center gap-3 border-b border-zinc-100 bg-white">
+              <Loader2 size={18} className="animate-spin text-zinc-900 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-zinc-900">
+                  {currentAgent ? `Evaluating ${currentAgent}` : "Starting workflow…"}
+                </p>
+                <p className="text-xs text-zinc-400 mt-0.5">
+                  {currentAgent ? "Running 3-layer Intent Integrity check…" : "Deriving mandates and initialising agents…"}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* Status banner */}
-        {(blocked || workflowDone) && (
+        {!running && (blocked || workflowDone) && (
           <div className={cn(
             "px-4 py-2.5 flex items-center gap-2 text-sm font-medium border-b",
             blocked
               ? "bg-red-50 border-red-200 text-red-700"
-              : "bg-zinc-50 border-zinc-200 text-zinc-700"
+              : "bg-zinc-900 text-white border-zinc-900"
           )}>
             {blocked
               ? <><AlertTriangle size={14} /> Workflow blocked — delegation chain terminated. Check Chain and Tokens tabs.</>
-              : <><CheckCircle size={14} /> Workflow complete — all agents passed Intent Integrity verification.</>
+              : <><CheckCircle size={14} /> Workflow complete — full chain entailment verified at every hop</>
             }
           </div>
         )}
