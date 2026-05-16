@@ -96,9 +96,9 @@ def _seed_examples():
                 ),
                 AgentTool(
                     name="read_email",
-                    description="Read emails from inbox",
-                    parameters={"folder": "Folder to read from"},
-                    simulated_response="Inbox ({folder}): 3 unread messages. Latest: 'Q3 Sales Report' from alice@company.com.",
+                    description="Read emails from a folder and return the latest message with full body",
+                    parameters={"folder": "Folder to read from (e.g. inbox)"},
+                    simulated_response="From: alice@company.com | Subject: Q3 Sales Report | Folder: {folder}\n\nQ3 Performance Summary — Total revenue: $4.2M (up 12% YoY). Top performers: Acme Corp ($1.1M), TechCo ($890K), GlobalInc ($670K). Pipeline for Q4: $6.8M. Key wins: 3 enterprise deals closed in September. Risks: TechCo renewal pending, GlobalInc contract under review.",
                 ),
             ],
         ),
