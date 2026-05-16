@@ -1,6 +1,6 @@
 "use client";
 
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import {
   CheckCircle, XCircle, AlertTriangle, Cpu, Shield,
   Key, ArrowRight, Loader2, GitBranch,
@@ -29,7 +29,7 @@ function ChainChecks({ chain }: { chain: Record<string, unknown> }) {
               : <XCircle size={11} className="text-red-500 mt-0.5 shrink-0" />
             }
             <div>
-              <span className={clsx("text-xs font-mono", passed ? "text-slate-500" : "text-red-600 font-medium")}>
+              <span className={cn("text-xs font-mono", passed ? "text-zinc-500" : "text-red-600 font-medium")}>
                 {label}
               </span>
               {!passed && (
@@ -50,14 +50,14 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
   switch (type) {
     case "workflow_start":
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100">
-          <ArrowRight size={14} className="text-slate-400 mt-0.5 shrink-0" />
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
+          <ArrowRight size={14} className="text-zinc-400 mt-0.5 shrink-0" />
           <div>
-            <span className="text-xs text-slate-700 font-semibold">Workflow started</span>
-            <p className="text-xs text-slate-500 mt-0.5">Task: {String(data.task)}</p>
+            <span className="text-xs text-zinc-700 font-semibold">Workflow started</span>
+            <p className="text-xs text-zinc-500 mt-0.5">Task: {String(data.task)}</p>
             {!!data.injection && (
-              <p className="text-xs text-orange-600 mt-0.5 font-medium">
-                Injection active: <span className="font-mono">{String(data.injection)}</span>
+              <p className="text-xs text-red-600 mt-0.5 font-medium font-mono">
+                Injection active: {String(data.injection)}
               </p>
             )}
           </div>
@@ -66,9 +66,9 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "agent_start":
       return (
-        <div className="flex gap-3 items-center py-2.5 border-b border-slate-100">
-          <Cpu size={14} className="text-violet-500 shrink-0" />
-          <span className="text-xs text-violet-700 font-semibold">
+        <div className="flex gap-3 items-center py-2.5 border-b border-zinc-100">
+          <Cpu size={14} className="text-zinc-500 shrink-0" />
+          <span className="text-xs text-zinc-700 font-semibold">
             Executing {String(data.agent_name)}
           </span>
         </div>
@@ -76,12 +76,12 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "mandate_derived":
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100">
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
           <GitBranch size={14} className="text-cyan-600 mt-0.5 shrink-0" />
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-cyan-700 font-semibold">Mandate derived</span>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-zinc-400 font-mono">
                 depth={String(data.mandate_depth)} from={String(data.derived_from)}
               </span>
             </div>
@@ -96,20 +96,20 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
       const steps = (data.reasoning_steps as string[]) ?? [];
       const calls = (data.tool_calls as Record<string, unknown>[]) ?? [];
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100">
-          <Cpu size={14} className="text-slate-400 mt-0.5 shrink-0" />
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
+          <Cpu size={14} className="text-zinc-400 mt-0.5 shrink-0" />
           <div className="space-y-1 w-full">
-            <span className="text-xs text-slate-500 font-semibold">{String(data.agent_name)} reasoning</span>
+            <span className="text-xs text-zinc-500 font-semibold">{String(data.agent_name)} reasoning</span>
             {steps.map((s, i) => (
-              <p key={i} className="text-xs text-slate-500 leading-relaxed pl-2 border-l-2 border-slate-100">
+              <p key={i} className="text-xs text-zinc-500 leading-relaxed pl-2 border-l-2 border-zinc-100">
                 {s.length > 300 ? s.slice(0, 300) + "…" : s}
               </p>
             ))}
             {calls.map((tc, i) => (
-              <div key={i} className="text-xs font-mono pl-2">
-                <span className="text-violet-600">{String(tc.tool)}</span>
-                {" → "}
-                <span className="text-slate-500">{String(tc.result).slice(0, 100)}</span>
+              <div key={i} className="text-xs font-mono pl-2 flex gap-1.5 items-baseline">
+                <span className="text-zinc-900 font-semibold">{String(tc.tool)}</span>
+                <span className="text-zinc-400">→</span>
+                <span className="text-zinc-500">{String(tc.result).slice(0, 100)}</span>
               </div>
             ))}
           </div>
@@ -119,7 +119,7 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "semauth_evaluating":
       return (
-        <div className="flex gap-3 items-center py-2.5 border-b border-slate-100">
+        <div className="flex gap-3 items-center py-2.5 border-b border-zinc-100">
           <Loader2 size={14} className="text-amber-500 animate-spin shrink-0" />
           <span className="text-xs text-amber-700 font-semibold">
             SemAuth (3 layers) evaluating {String(data.agent_name)}…
@@ -134,24 +134,39 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
       const gap = v.entailment_gap_demonstrated as boolean;
       const simScore = Number(v.similarity_score);
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100">
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
           <Shield size={14} className="text-blue-500 mt-0.5 shrink-0" />
           <div className="space-y-1.5 w-full">
             <span className="text-xs text-blue-700 font-semibold">SemAuth 3-layer verdict</span>
-            <div className="flex gap-3 text-xs flex-wrap">
-              <span className={clsx("font-mono font-semibold px-1.5 py-0.5 rounded", simScore >= 0.75 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600")}>
+            <div className="flex gap-2 text-xs flex-wrap">
+              <span className={cn(
+                "font-mono font-semibold px-2 py-0.5 rounded-full border",
+                simScore >= 0.75
+                  ? "bg-zinc-100 text-zinc-700 border-zinc-200"
+                  : "bg-red-100 text-red-600 border-red-200"
+              )}>
                 L1 sim={String(v.similarity_score)}
               </span>
-              <span className={clsx("font-mono font-semibold px-1.5 py-0.5 rounded", cvic.detected ? "bg-red-100 text-red-600" : "bg-green-100 text-green-700")}>
+              <span className={cn(
+                "font-mono font-semibold px-2 py-0.5 rounded-full border",
+                cvic.detected
+                  ? "bg-red-100 text-red-600 border-red-200"
+                  : "bg-zinc-100 text-zinc-700 border-zinc-200"
+              )}>
                 L2 cvic={cvic.detected ? "DETECTED" : "CLEAN"}
               </span>
-              <span className={clsx("font-mono font-semibold px-1.5 py-0.5 rounded", chain.all_passed ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600")}>
+              <span className={cn(
+                "font-mono font-semibold px-2 py-0.5 rounded-full border",
+                chain.all_passed
+                  ? "bg-zinc-100 text-zinc-700 border-zinc-200"
+                  : "bg-red-100 text-red-600 border-red-200"
+              )}>
                 L3 chain={chain.all_passed ? "VALID" : "BROKEN"}
               </span>
             </div>
             <ChainChecks chain={chain} />
             {gap && (
-              <p className="text-xs text-orange-600 font-semibold bg-orange-50 border border-orange-200 rounded px-2 py-1 mt-1">
+              <p className="text-xs text-red-700 font-semibold bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5 mt-1">
                 Entailment Gap — L1 similarity passed but L2/L3 caught the attack
               </p>
             )}
@@ -163,31 +178,31 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
     case "semauth_blocked": {
       const chain = (data.chain_checks as Record<string, unknown>) ?? {};
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100 bg-red-50 rounded-lg px-2 my-1">
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100 bg-red-50 border border-red-100 rounded-xl px-3 my-1.5">
           <XCircle size={14} className="text-red-500 mt-0.5 shrink-0" />
           <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-xs text-red-700 font-bold">BLOCKED — {String(data.agent_name)}</span>
-              <span className="text-xs bg-red-100 text-red-700 border border-red-200 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-xs bg-red-100 text-red-700 border border-red-200 px-2 py-0.5 rounded-full font-mono font-semibold">
                 {String(data.blocked_by)}
               </span>
             </div>
             {!!data.cvic_class && (
               <p className="text-xs text-red-600 font-medium">
                 CVIC: <span className="font-mono">{String(data.cvic_class)}</span>{" "}
-                (conf {String(data.cvic_confidence)})
+                <span className="text-zinc-500">(conf {String(data.cvic_confidence)})</span>
               </p>
             )}
-            {!!data.cvic_reason && <p className="text-xs text-slate-600">{String(data.cvic_reason)}</p>}
+            {!!data.cvic_reason && <p className="text-xs text-zinc-600">{String(data.cvic_reason)}</p>}
             {!!data.weakest_link && (
-              <p className="text-xs text-orange-600 font-mono">Chain broken at: {String(data.weakest_link)}</p>
+              <p className="text-xs text-red-600 font-mono">Chain broken at: {String(data.weakest_link)}</p>
             )}
             {!!data.similarity_would_miss && (
-              <p className="text-xs text-orange-600 italic">Why similarity missed: {String(data.similarity_would_miss)}</p>
+              <p className="text-xs text-zinc-500 italic">Why similarity missed: {String(data.similarity_would_miss)}</p>
             )}
             <ChainChecks chain={chain} />
             {(data.downstream_protected as string[])?.length > 0 && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-zinc-500">
                 Downstream protected: {(data.downstream_protected as string[]).join(", ")}
               </p>
             )}
@@ -199,15 +214,15 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
     case "token_issued": {
       const claims = (data.jwt_claims as Record<string, unknown>) ?? {};
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100 bg-green-50 rounded-lg px-2 my-1">
-          <Key size={14} className="text-green-600 mt-0.5 shrink-0" />
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100 bg-zinc-50 border border-zinc-200 rounded-xl px-3 my-1.5">
+          <Key size={14} className="text-zinc-600 mt-0.5 shrink-0" />
           <div className="space-y-1">
-            <span className="text-xs text-green-700 font-bold">JWT issued — {String(data.agent_name)}</span>
+            <span className="text-xs text-zinc-800 font-bold">JWT issued — {String(data.agent_name)}</span>
             <div className="flex gap-2 text-xs font-mono flex-wrap">
-              <span className="text-slate-500">scope: {String(claims.scope)}</span>
-              <span className="text-green-700 font-semibold">ii_verified: true</span>
-              <span className="text-green-700 font-semibold">ii_chain_valid: {String(claims.ii_chain_valid)}</span>
-              <span className="text-slate-500">depth: {String(data.act_chain_depth)}</span>
+              <span className="text-zinc-500">scope: {String(claims.scope)}</span>
+              <span className="text-zinc-800 font-semibold">ii_verified: true</span>
+              <span className="text-zinc-800 font-semibold">ii_chain_valid: {String(claims.ii_chain_valid)}</span>
+              <span className="text-zinc-500">depth: {String(data.act_chain_depth)}</span>
             </div>
             {!!claims.mandate && (
               <p className="text-xs text-cyan-700 font-mono">mandate: {String(claims.mandate).slice(0, 120)}</p>
@@ -219,11 +234,11 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "agent_complete":
       return (
-        <div className="flex gap-3 items-start py-2.5 border-b border-slate-100">
+        <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
           <CheckCircle size={14} className="text-green-500 mt-0.5 shrink-0" />
           <div>
-            <span className="text-xs text-green-700 font-semibold">{String(data.agent_name)} completed</span>
-            <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+            <span className="text-xs text-zinc-700 font-semibold">{String(data.agent_name)} completed</span>
+            <p className="text-xs text-zinc-500 mt-0.5 leading-relaxed">
               {String(data.result).slice(0, 200)}
             </p>
           </div>
@@ -232,9 +247,9 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "workflow_complete":
       return (
-        <div className="flex gap-3 items-center py-2.5 bg-green-50 rounded-lg px-2">
-          <CheckCircle size={14} className="text-green-600 shrink-0" />
-          <span className="text-xs text-green-700 font-bold">
+        <div className="flex gap-3 items-center py-2.5 bg-zinc-900 rounded-xl px-3 my-1">
+          <CheckCircle size={14} className="text-white shrink-0" />
+          <span className="text-xs text-white font-bold">
             Workflow complete — full chain entailment verified at every hop
           </span>
         </div>
@@ -242,9 +257,9 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 
     case "workflow_blocked":
       return (
-        <div className="flex gap-3 items-center py-2.5 bg-red-50 rounded-lg px-2">
-          <XCircle size={14} className="text-red-500 shrink-0" />
-          <span className="text-xs text-red-700 font-bold">
+        <div className="flex gap-3 items-center py-2.5 bg-red-600 rounded-xl px-3 my-1">
+          <XCircle size={14} className="text-white shrink-0" />
+          <span className="text-xs text-white font-bold">
             Workflow blocked at {String(data.blocked_at)} — delegation chain terminated
           </span>
         </div>
@@ -253,8 +268,8 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
     case "error":
       return (
         <div className="flex gap-3 items-center py-2.5">
-          <AlertTriangle size={14} className="text-orange-500 shrink-0" />
-          <span className="text-xs text-orange-700">{String(data.message)}</span>
+          <AlertTriangle size={14} className="text-amber-500 shrink-0" />
+          <span className="text-xs text-amber-700">{String(data.message)}</span>
         </div>
       );
 
@@ -266,7 +281,7 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
 export default function EventFeed({ events }: Props) {
   if (events.length === 0) {
     return (
-      <div className="flex items-center justify-center h-32 text-slate-400 text-sm">
+      <div className="flex items-center justify-center h-32 text-zinc-400 text-sm">
         Run a workflow to see events
       </div>
     );

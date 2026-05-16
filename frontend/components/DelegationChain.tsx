@@ -18,7 +18,7 @@ interface Props {
 export default function DelegationChain({ hops }: Props) {
   if (hops.length === 0) {
     return (
-      <div className="text-slate-400 text-xs flex items-center justify-center h-16">
+      <div className="text-zinc-400 text-xs flex items-center justify-center h-16">
         No delegation hops yet
       </div>
     );
@@ -28,17 +28,17 @@ export default function DelegationChain({ hops }: Props) {
     <div className="flex items-start gap-2 flex-wrap py-2">
       {/* User origin */}
       <div className="flex flex-col items-center gap-1">
-        <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center text-xs text-slate-600 font-semibold">
+        <div className="w-9 h-9 rounded-full bg-zinc-100 border border-zinc-300 flex items-center justify-center text-xs text-zinc-600 font-semibold">
           U
         </div>
-        <span className="text-xs text-slate-400">User</span>
+        <span className="text-xs text-zinc-400">User</span>
       </div>
 
       {hops.map((hop, i) => (
         <div key={i} className="flex items-start gap-2">
           <div className="flex flex-col items-center mt-1.5">
-            <ArrowRight size={14} className="text-slate-400" />
-            <span className="text-xs text-slate-400 font-mono mt-0.5">act</span>
+            <ArrowRight size={14} className="text-zinc-400" />
+            <span className="text-xs text-zinc-400 font-mono mt-0.5">act</span>
           </div>
 
           <div
@@ -55,11 +55,11 @@ export default function DelegationChain({ hops }: Props) {
               ) : (
                 <XCircle size={13} className="text-red-500" />
               )}
-              <span className="text-xs text-slate-800 font-semibold">{hop.agent_name}</span>
+              <span className="text-xs text-zinc-800 font-semibold">{hop.agent_name}</span>
             </div>
             <div className="flex gap-1 flex-wrap justify-center">
               {hop.scopes.map((s) => (
-                <span key={s} className="text-xs font-mono text-slate-500 bg-white border border-slate-200 px-1 rounded">
+                <span key={s} className="text-xs font-mono text-zinc-500 bg-white border border-zinc-200 px-1 rounded">
                   {s}
                 </span>
               ))}
@@ -69,7 +69,7 @@ export default function DelegationChain({ hops }: Props) {
                 {hop.cvic_class}
               </span>
             )}
-            <span className="text-xs text-slate-400 font-mono">{hop.agent_id}</span>
+            <span className="text-xs text-zinc-400 font-mono">{hop.agent_id}</span>
           </div>
         </div>
       ))}

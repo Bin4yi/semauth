@@ -310,18 +310,19 @@ export default function WorkflowRunner({ agents, onAgentsChange, onEditAgent }: 
 
                     {/* Controls */}
                     <div className="flex items-center gap-0.5 shrink-0">
-                      {/* Inject — critical: light red when active */}
+                      {/* Inject — always visible, red when active */}
                       <button
                         onClick={() => setExpandedInject(expandedInject === agent.id ? null : agent.id)}
                         className={cn(
-                          "p-1.5 rounded-md transition-colors",
+                          "flex items-center gap-1 px-2 py-1 rounded-md border text-xs font-medium transition-all",
                           agentInjections[agent.id]
-                            ? "text-red-600 bg-red-50 hover:bg-red-100"
-                            : "text-zinc-400 hover:text-red-500 hover:bg-red-50"
+                            ? "bg-red-100 border-red-300 text-red-700 hover:bg-red-200"
+                            : "bg-white border-zinc-300 text-zinc-600 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                         )}
-                        title="Add injection"
+                        title="Add prompt injection"
                       >
                         <Bug size={12} />
+                        <span>Inject</span>
                       </button>
                       <button onClick={() => moveUp(idx)} disabled={idx === 0} className="p-1.5 text-zinc-400 hover:text-zinc-700 disabled:opacity-25 rounded-md hover:bg-zinc-100 transition-colors">
                         <ChevronUp size={12} />

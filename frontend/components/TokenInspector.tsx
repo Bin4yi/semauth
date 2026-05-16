@@ -18,11 +18,11 @@ interface Props {
 
 function ClaimRow({ label, value, highlight }: { label: string; value: unknown; highlight?: boolean }) {
   return (
-    <div className="flex gap-3 text-xs py-1.5 border-b border-slate-100 last:border-0">
-      <span className="text-slate-400 w-36 shrink-0 font-mono">{label}</span>
+    <div className="flex gap-3 text-xs py-1.5 border-b border-zinc-100 last:border-0">
+      <span className="text-zinc-400 w-36 shrink-0 font-mono">{label}</span>
       <span className={clsx(
         "font-mono break-all",
-        highlight ? "text-violet-700 font-semibold" : "text-slate-700"
+        highlight ? "text-zinc-900 font-bold" : "text-zinc-700"
       )}>
         {JSON.stringify(value)}
       </span>
@@ -37,7 +37,7 @@ function clsx(...classes: (string | boolean | undefined)[]) {
 export default function TokenInspector({ tokens }: Props) {
   if (tokens.length === 0) {
     return (
-      <div className="flex items-center justify-center h-16 text-slate-400 text-xs">
+      <div className="flex items-center justify-center h-16 text-zinc-400 text-xs">
         No tokens yet — run a workflow
       </div>
     );
@@ -64,7 +64,7 @@ export default function TokenInspector({ tokens }: Props) {
               <span className={`text-sm font-semibold ${withheld ? "text-red-700" : "text-green-700"}`}>
                 {withheld ? "WITHHELD" : "ISSUED"} — {t.agent_name}
               </span>
-              <span className="text-xs text-slate-400 font-mono ml-auto">
+              <span className="text-xs text-zinc-400 font-mono ml-auto">
                 act_depth={t.act_chain_depth}
               </span>
             </div>
@@ -92,7 +92,7 @@ export default function TokenInspector({ tokens }: Props) {
                 <ClaimRow label="ii_chain_checks" value={t.jwt_claims.ii_chain_checks} highlight />
                 <ClaimRow label="ii_trace_hash" value={t.jwt_claims.ii_trace_hash} />
                 <ClaimRow label="ii_cvic_score" value={t.jwt_claims.ii_cvic_score} />
-                <p className="text-xs text-slate-400 mt-2 font-mono">
+                <p className="text-xs text-zinc-400 mt-2 font-mono">
                   trace: {t.trace_hash}
                 </p>
               </div>

@@ -34,8 +34,8 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Agent Registry</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-zinc-900">Agent Registry</h1>
+          <p className="text-sm text-zinc-500 mt-1">
             Create and manage agents. Each agent has tools, scopes, and a system prompt.
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function AgentsPage() {
 
       {agents.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-slate-400 text-sm">No agents yet. Create one to get started.</p>
+          <p className="text-zinc-400 text-sm">No agents yet. Create one to get started.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
