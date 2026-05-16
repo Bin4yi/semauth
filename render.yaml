@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: semauth-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false          # you fill this in the Render dashboard
+      - key: SIMULATED_IS_SECRET
+        value: semauth-prod-secret
+      - key: SEMAUTH_SIMILARITY_THRESHOLD
+        value: "0.75"
+      - key: SEMAUTH_CVIC_THRESHOLD
+        value: "0.70"
+      - key: DATABASE_URL
+        value: semauth.db
+    plan: free
