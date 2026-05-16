@@ -2,12 +2,11 @@ services:
   - type: web
     name: semauth-backend
     runtime: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
-        sync: false          # you fill this in the Render dashboard
+        sync: false
       - key: SIMULATED_IS_SECRET
         value: semauth-prod-secret
       - key: SEMAUTH_SIMILARITY_THRESHOLD
