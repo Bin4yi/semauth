@@ -133,20 +133,33 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
       const chain = (v.chain as Record<string, unknown>) ?? {};
       const gap = v.entailment_gap_demonstrated as boolean;
       const simScore = Number(v.similarity_score);
+      const simPassed = simScore >= 0.75;
+      // Entailment Gap: similarity said PASS but CVIC/chain caught the attack
+      const simBlindspot = simPassed && (cvic.detected || !chain.all_passed);
       return (
         <div className="flex gap-3 items-start py-2.5 border-b border-zinc-100">
           <Shield size={14} className="text-blue-500 mt-0.5 shrink-0" />
           <div className="space-y-1.5 w-full">
             <span className="text-xs text-blue-700 font-semibold">SemAuth 3-layer verdict</span>
-            <div className="flex gap-2 text-xs flex-wrap">
-              <span className={cn(
-                "font-mono font-semibold px-2 py-0.5 rounded-full border",
-                simScore >= 0.75
-                  ? "bg-zinc-100 text-zinc-700 border-zinc-200"
-                  : "bg-red-100 text-red-600 border-red-200"
-              )}>
-                L1 sim={String(v.similarity_score)}
-              </span>
+            <div className="flex gap-2 text-xs flex-wrap items-center">
+              {/* L1 — show "WOULD HAVE PASSED" warning when it's a blind spot */}
+              <div className="flex items-center gap-1">
+                <span className={cn(
+                  "font-mono font-semibold px-2 py-0.5 rounded-full border",
+                  simBlindspot
+                    ? "bg-amber-50 text-amber-700 border-amber-300"
+                    : simPassed
+                      ? "bg-zinc-100 text-zinc-700 border-zinc-200"
+                      : "bg-red-100 text-red-600 border-red-200"
+                )}>
+                  L1 sim={String(v.similarity_score)}
+                </span>
+                {simBlindspot && (
+                  <span className="text-xs font-bold text-amber-700 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full uppercase tracking-wide">
+                    ⚠ Would have passed
+                  </span>
+                )}
+              </div>
               <span className={cn(
                 "font-mono font-semibold px-2 py-0.5 rounded-full border",
                 cvic.detected
@@ -166,9 +179,16 @@ function EventRow({ event }: { event: Record<string, unknown> }) {
             </div>
             <ChainChecks chain={chain} />
             {gap && (
-              <p className="text-xs text-red-700 font-semibold bg-red-50 border border-red-200 rounded-lg px-2.5 py-1.5 mt-1">
-                Entailment Gap — L1 similarity passed but L2/L3 caught the attack
-              </p>
+              <div className="mt-1 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 space-y-0.5">
+                <p className="text-xs text-amber-800 font-bold">Entailment Gap demonstrated</p>
+                <p className="text-xs text-amber-700">
+                  Cosine similarity scored <span className="font-mono font-semibold">{simScore.toFixed(4)}</span> — above the pass threshold.
+                  A similarity-only gate would have <span className="font-semibold">issued the token and allowed the attack.</span>
+                </p>
+                {!!cvic.similarity_would_miss && (
+                  <p className="text-xs text-amber-600 italic mt-0.5">{String(cvic.similarity_would_miss)}</p>
+                )}
+              </div>
             )}
           </div>
         </div>
